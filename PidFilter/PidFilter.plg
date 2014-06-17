@@ -1,0 +1,27 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: PidFilter - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\2\RSP52.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/PidFilter.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"f:\PidFilter\PidFilterDlg.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\2\RSP52.tmp" 
+Creating command line "link.exe /nologo /subsystem:windows /incremental:yes /pdb:"Debug/PidFilter.pdb" /debug /machine:I386 /out:"Debug/PidFilter.exe" /pdbtype:sept  .\Debug\PidFilter.obj .\Debug\PidFilterDlg.obj .\Debug\StdAfx.obj .\Debug\PidFilter.res "
+<h3>Output Window</h3>
+Compiling...
+PidFilterDlg.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+PidFilter.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

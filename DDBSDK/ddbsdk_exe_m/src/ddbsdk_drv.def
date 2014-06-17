@@ -1,0 +1,13 @@
+LIBRARY DDBSDK_DRV
+
+EXPORTS DDB_Init
+	DDB_Deinit
+	DDB_Open
+	DDB_Close
+	DDB_Read
+	DDB_Write
+	DDB_Seek
+	DDB_IOControl
+	DDB_PowerDown
+	DDB_PowerUp
+

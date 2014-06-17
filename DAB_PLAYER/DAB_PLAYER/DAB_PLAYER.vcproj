@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9.00"
+	Name="DAB_PLAYER"
+	ProjectGUID="{D03F96C1-D3F8-44FC-9B44-2F42EFD6E6F9}"
+	RootNamespace="DAB_PLAYER"
+	Keyword="MFCProj"
+	TargetFrameworkVersion="196613"
+	>
+	<Platforms>
+		<Platform
+			Name="CE2443I (ARMV4I)"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|CE2443I (ARMV4I)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfMFC="1"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE"
+				MkTypLibCompatible="false"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;WINCE;DEBUG;$(ARCHFAM);$(_ARCHFAM_);STANDARDSHELL_UI_MODEL"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE"
+				Culture="2052"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /subsystem:windowsce,5.00"
+				AdditionalDependencies="../CI_Player/ci_playback_sdk_wince5_r.lib"
+				LinkIncremental="2"
+				GenerateDebugInformation="true"
+				StackReserveSize="65536"
+				StackCommitSize="4096"
+				EntryPointSymbol="WinMainCRTStartup"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory="\StorageCard\DAB_PLAYER"
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|CE2443I (ARMV4I)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfMFC="1"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE"
+				MkTypLibCompatible="false"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="3"
+				FavorSizeOrSpeed="2"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;WINCE;$(ARCHFAM);$(_ARCHFAM_);STANDARDSHELL_UI_MODEL"
+				MinimalRebuild="false"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE"
+				Culture="2052"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /subsystem:windowsce,5.00"
+				AdditionalDependencies="../CI_Player/ci_playback_sdk_wince5_r.lib"
+				LinkIncremental="1"
+				GenerateDebugInformation="true"
+				StackReserveSize="65536"
+				StackCommitSize="4096"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				EntryPointSymbol="WinMainCRTStartup"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory="\StorageCard\DAB_PLAYER"
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
+			<File
+				RelativePath=".\DAB_PLAYER.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DAB_PLAYERDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\stdafx.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|CE2443I (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|CE2443I (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+			</File>
+			<Filter
+				Name="CI_Player"
+				>
+				<File
+					RelativePath="..\CI_Player\CI_Player.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\CI_Player\CI_Player.h"
+					>
+				</File>
+				<File
+					RelativePath="..\CI_Player\CI_SDK_Playback.h"
+					>
+				</File>
+				<File
+					RelativePath="..\CI_Player\CI_SDK_Typedef.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="DDBSDK"
+				>
+				<File
+					RelativePath="..\DABSDK\ddbsdk_if.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DABSDK\ddbsdk_if.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
+			<File
+				RelativePath=".\DAB_PLAYER.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DAB_PLAYERDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\stdafx.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
+			<File
+				RelativePath="..\贴图\audio2.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\bitmap1.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\DAB_PLAYER.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\DAB_PLAYER.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\res\DAB_PLAYER.rc2"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\p.BMP"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\p1a.BMP"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\p1b.BMP"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\p2a.BMP"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\p2b.BMP"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\Screen0.BMP"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\Screen1.BMP"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\Screen2.BMP"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\tLeft.BMP"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\tRight.BMP"
+				>
+			</File>
+			<File
+				RelativePath="..\贴图\video2.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\y1a.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\y1b.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\y2a.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\y2b.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\信号0.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\信号1.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\信号2.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\信号3.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\信号4.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\信号5.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_02.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_03.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_04.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_06.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_08.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_10.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_11.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_12.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_14.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_15.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_16.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\美赛达_17.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量00.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量01.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量02.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量03.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量04.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量05.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量06.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量07.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量08.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量09.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量10.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量11.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量12.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量13.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量14.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量15.bmp"
+				>
+			</File>
+			<File
+				RelativePath="C:\Documents and Settings\Administrator\桌面\贴图\音量16.bmp"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath=".\ReadMe.txt"
+			>
+		</File>
+	</Files>
+	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="DAB_PLAYER.rc"
+		/>
+	</Globals>
+</VisualStudioProject>

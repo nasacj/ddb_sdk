@@ -1,0 +1,238 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#include ""res\\DAB_PLAYER.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""l.CHS\\afxres.rc""      // 标准组件\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\DAB_PLAYER.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DAB_PLAYER_DIALOG DIALOG  0, 0, 352, 231
+STYLE DS_SETFONT | WS_POPUP | WS_VISIBLE | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW | 0x80000000L
+FONT 9, "MS Sans Serif"
+BEGIN
+    CONTROL         139,IDC_STATIC,"Static",SS_BITMAP,48,0,272,21
+    CONTROL         141,IDC_STATIC,"Static",SS_BITMAP,0,26,2,122
+    CONTROL         141,IDC_STATIC,"Static",SS_BITMAP,319,26,2,122
+    CONTROL         142,IDC_STATIC,"Static",SS_BITMAP,178,26,4,122
+    CONTROL         144,IDC_STATIC,"Static",SS_BITMAP,0,148,320,3
+    CONTROL         150,PIC_EXIT,"Static",SS_BITMAP | SS_NOTIFY,279,151,41,31
+    CONTROL         151,IDC_STATIC_SIGNAL,"Static",SS_BITMAP,0,0,48,21
+    CONTROL         157,IDC_STATIC_VOLUME,"Static",SS_BITMAP,59,151,92,31
+    CONTROL         134,IDC_STATIC,"Static",SS_BITMAP,182,86,116,62
+    CONTROL         143,IDC_STATIC,"Static",SS_BITMAP,298,26,21,122
+    CONTROL         146,VOL_DOWN,"Static",SS_BITMAP | SS_NOTIFY,23,151,36,31
+    CONTROL         147,VOL_UP,"Static",SS_BITMAP | SS_NOTIFY,151,151,32,31
+    CONTROL         148,PIC_VIDEO,"Static",SS_BITMAP | SS_NOTIFY,183,151,39,31
+    CONTROL         149,PIC_AUDIO,"Static",SS_BITMAP | SS_NOTIFY,222,151,42,31
+    CONTROL         140,IDC_STATIC,"Static",SS_BITMAP,0,21,320,5
+    CONTROL         133,IDC_DYCJ2,"Static",SS_BITMAP | SS_NOTIFY,182,56,116,30
+    CONTROL         131,IDC_CCTV2,"Static",SS_BITMAP | SS_NOTIFY,182,26,116,30
+    CONTROL         179,IDC_STATIC,"Static",SS_BITMAP,0,151,23,31
+    CONTROL         175,IDC_STATIC,"Static",SS_BITMAP,264,151,15,31
+    CONTROL         176,IDC_STATIC_VIDEO,"Static",SS_BITMAP | SS_NOTIFY,2,26,176,122
+    LTEXT           "Static",IDC_STATIC_SCREEN,2,26,177,121,SS_NOTIFY
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080403a8"
+        BEGIN
+            VALUE "CompanyName", "上海普承"
+            VALUE "FileDescription", "DAB播放器"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "DAB_PLAYER.exe"
+            VALUE "LegalCopyright", "(C) <上海普承数码产品开发有限公司>。保留所有权利。"
+            VALUE "OriginalFilename", "DAB_PLAYER.exe"
+            VALUE "ProductName", "DAB播放器"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 936
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DAB_PLAYER_DIALOG, DIALOG
+    BEGIN
+        RIGHTMARGIN, 351
+        BOTTOMMARGIN, 224
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_CHAN_CCTV1          BITMAP                  "..\\贴图\\p1a.BMP"
+IDB_CHAN_CCTV2          BITMAP                  "..\\贴图\\p1b.BMP"
+IDB_CHAN_DYCJ1          BITMAP                  "..\\贴图\\p2a.BMP"
+IDB_CHAN_DYCJ2          BITMAP                  "..\\贴图\\p2b.BMP"
+IDB_SCREEN_RIGHT        BITMAP                  "..\\贴图\\p.BMP"
+IDB_CHAN_ENEWS1         BITMAP                  "..\\贴图\\y1a.bmp"
+IDB_CHAN_ENEWS2         BITMAP                  "..\\贴图\\y1b.bmp"
+IDB_CHAN_SGJT1          BITMAP                  "..\\贴图\\y2a.bmp"
+IDB_CHAN_SGJT2          BITMAP                  "..\\贴图\\y2b.bmp"
+IDB_FRAME_UPBOARD       BITMAP                  "..\\贴图\\美赛达_02.bmp"
+IDB_FRAME_UPSIDE        BITMAP                  "..\\贴图\\美赛达_03.bmp"
+IDB_FRAME_LRSIDE        BITMAP                  "..\\贴图\\美赛达_04.bmp"
+IDB_FRAME_MIDSIDE       BITMAP                  "..\\贴图\\美赛达_06.bmp"
+IDB_FRAME_ROLLBAR       BITMAP                  "..\\贴图\\美赛达_08.bmp"
+IDB_FRAME_DOWNSIDE      BITMAP                  "..\\贴图\\美赛达_10.bmp"
+IDB_VOL_DOWN            BITMAP                  "..\\贴图\\美赛达_12.bmp"
+IDB_VOL_UP              BITMAP                  "..\\贴图\\美赛达_14.bmp"
+IDB_MENU_VIDEO          BITMAP                  "..\\贴图\\美赛达_15.bmp"
+IDB_MENU_AUDIO          BITMAP                  "..\\贴图\\美赛达_16.bmp"
+IDB_MENU_EXIT           BITMAP                  "..\\贴图\\美赛达_17.bmp"
+IDB_SIGNAL0             BITMAP                  "..\\贴图\\信号0.bmp"
+IDB_SIGNAL1             BITMAP                  "..\\贴图\\信号1.bmp"
+IDB_SIGNAL2             BITMAP                  "..\\贴图\\信号2.bmp"
+IDB_SIGNAL4             BITMAP                  "..\\贴图\\信号4.bmp"
+IDB_SIGNAL5             BITMAP                  "..\\贴图\\信号5.bmp"
+IDB_VOL_BAR00           BITMAP                  "..\\贴图\\音量00.bmp"
+IDB_VOL_BAR01           BITMAP                  "..\\贴图\\音量01.bmp"
+IDB_VOL_BAR02           BITMAP                  "..\\贴图\\音量02.bmp"
+IDB_VOL_BAR03           BITMAP                  "..\\贴图\\音量03.bmp"
+IDB_VOL_BAR04           BITMAP                  "..\\贴图\\音量04.bmp"
+IDB_VOL_BAR05           BITMAP                  "..\\贴图\\音量05.bmp"
+IDB_VOL_BAR06           BITMAP                  "..\\贴图\\音量06.bmp"
+IDB_VOL_BAR07           BITMAP                  "..\\贴图\\音量07.bmp"
+IDB_VOL_BAR08           BITMAP                  "..\\贴图\\音量08.bmp"
+IDB_VOL_BAR09           BITMAP                  "..\\贴图\\音量09.bmp"
+IDB_VOL_BAR10           BITMAP                  "..\\贴图\\音量10.bmp"
+IDB_VOL_BAR11           BITMAP                  "..\\贴图\\音量11.bmp"
+IDB_VOL_BAR12           BITMAP                  "..\\贴图\\音量12.bmp"
+IDB_VOL_BAR13           BITMAP                  "..\\贴图\\音量13.bmp"
+IDB_VOL_BAR14           BITMAP                  "..\\贴图\\音量14.bmp"
+IDB_VOL_BAR15           BITMAP                  "..\\贴图\\音量15.bmp"
+IDB_VOL_BAR16           BITMAP                  "..\\贴图\\音量16.bmp"
+IDB_MENU_RIGHT          BITMAP                  "..\\贴图\\tRight.BMP"
+IDB_SCREEN0             BITMAP                  "..\\贴图\\Screen0.BMP"
+IDB_SCREEN1             BITMAP                  "..\\贴图\\Screen1.BMP"
+IDB_SCREEN2             BITMAP                  "..\\贴图\\Screen2.BMP"
+IDB_MANU_LEFT           BITMAP                  "..\\贴图\\tLeft.BMP"
+IDB_SIGNAL3             BITMAP                  "..\\贴图\\信号3.bmp"
+IDB_MENU_VIDEO2         BITMAP                  "..\\贴图\\video2.bmp"
+IDB_MENU_AUDIO2         BITMAP                  "..\\贴图\\audio2.bmp"
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE 4, 2
+#pragma code_page(936)
+#include "res\DAB_PLAYER.rc2"  // 非 Microsoft Visual C++ 编辑的资源
+#include "l.CHS\afxres.rc"      // 标准组件
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

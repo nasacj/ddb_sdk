@@ -1,0 +1,4 @@
+#ifndef DDBSDK_PLATFORM_WLD_H
+#define DDBSDK_PLATFORM_WLD_H
+
+#endif

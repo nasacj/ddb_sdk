@@ -1,0 +1,4 @@
+#ifndef DDBSDK_PLATFORM_GUOWEI_H
+#define DDBSDK_PLATFORM_GUOWEI_H
+
+#endif

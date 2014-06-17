@@ -1,0 +1,681 @@
+
+#include <windows.h>
+#include "stdafx.h"
+#include <stdio.h>
+#include "ddbsdk_exe.h"
+#include "../log/LocalLog.h"
+
+static bool deviceOpen = false;
+
+extern DWORD 
+DDB_Init(
+  LPCTSTR pContext,
+  DWORD dwBusContext
+);
+
+extern BOOL 
+DDB_Close(
+    DWORD Handle
+    );
+
+extern BOOL 
+DDB_Deinit(
+    DWORD dwContext     // future: pointer to the per disk structure
+    );
+
+extern DWORD 
+DDB_Open(
+    DWORD dwData,
+    DWORD dwAccess,
+    DWORD dwShareMode
+    );
+
+extern BOOL 
+DDB_IOControl(
+    DWORD Handle,
+    DWORD dwIoControlCode,
+    PBYTE pInBuf,
+    DWORD nInBufSize,
+    PBYTE pOutBuf,
+    DWORD nOutBufSize,
+    PDWORD pBytesReturned
+    );
+
+#define DDBSDK_SERVICEFILE_DEBUG_FILE 0
+
+#if DDBSDK_SERVICEFILE_DEBUG_FILE
+#include "../ddbsdk_ca/CA_STB_decode.h"
+#include "../src/ddbsdk.h"
+#include "../ddbsdk_data/ddbsdk_data.h"
+extern ddbsdk_t   ddbsdk;
+#define TEMPBUFSIZE   188 * 16
+
+extern void DataCallback(void*	    ClientPtr, 
+						  UINT32	ServiceHandle, 
+						  UINT8*	pBuffer, 
+						  UINT32	BufferSize );
+#endif
+
+void usagePrint(u32  version)
+{
+	char * strHelp = {
+"ddbsdk test usage: \n\
+-f val: set frequency, (default: 1470080000, the other freq 1458096000),\n\
+-d val: test private dab data, (val: 0-4\n\
+    0: traffic, 1: weather, 2: finance,\n\
+    3: PIO info, 4: download file)\n\
+-l val: list private dab data, and test one channel,(val:0-4\n\
+    0: traffic, 1: weather, 2: finance,\n\
+    3: PIO info)\n\
+-v val: test video program, (val: 0-1,\n\
+    0: first Finance, 1: CCTV-5)\n\
+-m val: test audio program, (val: 0-2, 0: classic 947, \n\
+    1: e-news, 2: traffic)\n\
+-r: register .dll lib, only used for register ddbsdk_drv.dll\n\
+-h: help\n\
+-s: ddbsdk_drv.dll software version, ca version\n\
+-p val: test the program in the list that -l listed,\n\
+     (val: list num)\n\
+-t : set SMG lab environment, freqency=1456384000, component index=0 \n\
+-x : set file_test_mode var, (only used for test)\n"
+	};
+	printf("ddbsdk version: %x.%x.%x\n%s", ((version >> 16) & 0xFF), ((version >> 8) & 0xFF), (version & 0xFF), strHelp);
+}
+
+void TEXT2ASC(LPTSTR    strT, char * strA)
+{
+	while(* strT != 0) {
+		* strA = (char) * strT;
+		strA ++;
+		strT ++;
+	}
+}
+
+void getComLineChar(char ** sPtr)
+{
+	while(*(* sPtr) != '\0') {
+		if(*(* sPtr) == '-') {(* sPtr) ++;   break;}
+		(* sPtr) ++;
+	}
+}
+
+u32 getComLineVal(char ** sPtr)
+{
+	int    cnt = 0;
+	unsigned int ret = 0;
+
+	(* sPtr) ++;
+	while(*(* sPtr) == ' ') { (* sPtr) ++; }
+	while(*(* sPtr) != ' ' && *(* sPtr) != '\0' ) {
+		cnt ++;
+		ret = ret * 10 + (*(* sPtr) - 0x30);
+		(* sPtr) ++;
+		if(cnt > 32) break;
+	}
+	return ret;
+}
+
+u16 get_time_t_year(unsigned long time)
+{
+	return (u16)(1970 + (time / (3600 * 24 * 365.25)));
+}
+
+u16 get_time_t_day(unsigned long time)
+{
+	u16 y = (u16)(time / (3600 * 24 * 365.25));
+
+	return (u16)((time - y * (3600 * 24 * 365.25)) / (3600 * 24) + 1) ;
+}
+
+void ddbif_dataListTest(void)
+{
+	DWORD dwThreadID_1;
+	DWORD nParameter_1;
+	HANDLE  hThread_1;
+	ddbsdk_dmbdataInfo_t    dataInfo = { 0 };
+	DWORD BytesReturned = 0;
+	int getCount = 0;
+
+	if(deviceOpen == false) {
+		//if(file_test_mode == 0) {
+			DDB_IOControl(NULL, IOCTL_DDBSDK_OPEN_DMBDEVICE, NULL, 0, NULL, 0, NULL);
+		//} else {
+		//	hThread_1 = CreateThread(NULL, 0, thread_sendStreamData, &nParameter_1, 0, &dwThreadID_1);
+		//}
+		deviceOpen = true;
+	}
+	DDB_IOControl(NULL, IOCTL_DDBSDK_LIST_DATAPROGRAM, NULL, 0, (unsigned char *)&dataInfo, sizeof(ddbsdk_dmbdataInfo_t), NULL);
+
+	for(int i = 0; i < dataInfo.ServiceNum; i++)
+	{
+		printf("-------------program[%d] info:---------------\n", i);
+		printf("serviceNo:%d\n",dataInfo.dataInfo[i].serviceNo);
+		printf("ServiceIndex:%d\n",dataInfo.dataInfo[i].ServiceIndex);
+		printf("data_pid:%d\n",dataInfo.dataInfo[i].data_pid);
+		printf("ecm_pid:%d\n",dataInfo.dataInfo[i].ecm_pid);
+		printf("emm_pid:%d\n",dataInfo.dataInfo[i].emm_pid);
+		printf("stream_type:%x\n",dataInfo.dataInfo[i].stream_type);
+		printf("descr:%s\n",dataInfo.dataInfo[i].descr);
+		printf("next:%x\n",dataInfo.dataInfo[i].next);
+	}
+}
+
+
+unsigned long  thread_sendStreamData(void * param)
+{
+	FILE * fp;
+	int   flen, pos;
+	unsigned char * tempTsBuffer;
+	
+	fp = fopen("\\MMC_Storage\\dump_DAB.ts", "rb");
+//	fp = fopen("\\MMC_Storage\\dump-data.ts", "rb");
+#define  TEMPTSBUFSIZE   188 * 16
+	tempTsBuffer = (unsigned char *)malloc(TEMPTSBUFSIZE);
+
+	DDB_IOControl(NULL, IOCTL_DDBSDK_SET_FILEINPUT_TEST_MODE, NULL, 0, NULL, 0, NULL);
+	while(1) {
+		Sleep(200);
+		/* read ts file to test service file download */
+		flen = fread(tempTsBuffer, 1, TEMPTSBUFSIZE, fp);
+
+		/* call datacallback to transfer data */
+		DDB_IOControl(NULL, IOCTL_DDBSDK_FILEINPUT_TEST, tempTsBuffer, flen, NULL, 0, NULL);
+
+		pos = ftell(fp);
+		if(feof(fp)) {
+			fseek(fp, 0, SEEK_SET);
+		}
+	}
+	DDB_IOControl(NULL, IOCTL_DDBSDK_CANCEL_FILEINPUT_TEST_MODE, NULL, 0, NULL, 0, NULL);
+#undef  TEMPTSBUFSIZE
+
+	free(tempTsBuffer);
+	fclose(fp);
+
+	return 0;
+}
+
+unsigned long  thread_sendStreamMusicam(void * param)
+{
+	FILE * fp;
+	int   flen, pos;
+	unsigned char * tempTsBuffer;
+	
+	fp = fopen("\\MMC_Storage\\dump-classic_947.mp2", "rb");
+//	fp = fopen("\\MMC_Storage\\dump-E-news.mp2", "rb");
+#define  TEMPMP2BUFSIZE   384 * 16
+	tempTsBuffer = (unsigned char *)malloc(TEMPMP2BUFSIZE);
+
+	DDB_IOControl(NULL, IOCTL_DDBSDK_SET_FILEINPUT_TEST_MODE, NULL, 0, NULL, 0, NULL);
+	while(1) {
+		Sleep(330);
+		/* read ts file to test service file download */
+		flen = fread(tempTsBuffer, 1, TEMPMP2BUFSIZE, fp);
+
+		/* call datacallback to transfer data */
+		DDB_IOControl(NULL, IOCTL_DDBSDK_FILEINPUT_TEST, tempTsBuffer, flen, NULL, 0, NULL);
+
+		pos = ftell(fp);
+		if(feof(fp)) {
+			fseek(fp, 0, SEEK_SET);
+		}
+	}
+	DDB_IOControl(NULL, IOCTL_DDBSDK_CANCEL_FILEINPUT_TEST_MODE, NULL, 0, NULL, 0, NULL);
+#undef  TEMPMP2BUFSIZE
+
+	free(tempTsBuffer);
+	fclose(fp);
+
+	return 0;
+}
+
+unsigned long  thread_sendStreamVideo(void * param)
+{
+	FILE * fp;
+	int   flen, pos;
+	unsigned char * tempTsBuffer;
+	fp = fopen("\\MMC_Storage\\dump-CCTV5.ts", "rb");
+#define  TEMPTSBUFSIZE   188 * 16
+	tempTsBuffer = (unsigned char *)malloc(TEMPTSBUFSIZE);
+
+	DDB_IOControl(NULL, IOCTL_DDBSDK_SET_FILEINPUT_TEST_MODE, NULL, 0, NULL, 0, NULL);
+	while(1) {
+		Sleep(50);
+		/* read ts file to test service file download */
+		flen = fread(tempTsBuffer, 1, TEMPTSBUFSIZE, fp);
+
+		/* call datacallback to transfer data */
+		DDB_IOControl(NULL, IOCTL_DDBSDK_FILEINPUT_TEST, tempTsBuffer, flen, NULL, 0, NULL);
+
+		pos = ftell(fp);
+		if(feof(fp)) {
+			fseek(fp, 0, SEEK_SET);
+		}
+	}
+	DDB_IOControl(NULL, IOCTL_DDBSDK_CANCEL_FILEINPUT_TEST_MODE, NULL, 0, NULL, 0, NULL);
+#undef  TEMPTSBUFSIZE
+
+	free(tempTsBuffer);
+	fclose(fp);
+
+	return 0;
+}
+
+unsigned long  thread_getStreamVideo(void * param)
+{
+	FILE  * f_video = fopen("\\Temp\\video.dat", "wb");
+	unsigned char * tempTsBuffer;
+	DWORD BytesReturned = 0;
+
+#define  TEMPVIDEOBUFSIZE   20000
+	tempTsBuffer = (unsigned char *)malloc(TEMPVIDEOBUFSIZE);
+
+	DWORD testCount = 0, getCount;
+	while(1) {
+		DDB_IOControl(NULL, IOCTL_DDBSDK_GET_VIDEO_ONEFRAMEVIDEO, NULL, 0, tempTsBuffer, TEMPVIDEOBUFSIZE, &BytesReturned);
+		getCount = BytesReturned;
+		testCount ++;
+		if(getCount > 0) fwrite(tempTsBuffer, 1, getCount, f_video);
+		if((testCount & 0x7) == 0) {
+			printf("video, count: %d, bytes: %d\n", testCount, getCount);
+		}
+		if(testCount > 100000) {
+			break;
+		}
+	}
+#undef  TEMPVIDEOBUFSIZE
+
+	fclose(f_video);
+	return 0;
+}
+
+unsigned long  thread_getStreamAudio(void * param)
+{
+	FILE  * f_audio = fopen("\\Temp\\audio.dat", "wb");
+	unsigned char * tempTsBuffer;
+	DWORD BytesReturned = 0;
+
+#define  TEMPAUDIOBUFSIZE   1024
+	tempTsBuffer = (unsigned char *)malloc(TEMPAUDIOBUFSIZE);
+
+	DWORD testCount = 0, getCount;
+	while(1) {
+		DDB_IOControl(NULL, IOCTL_DDBSDK_GET_VIDEO_ONEFRAMEAUDIO, NULL, 0, tempTsBuffer, TEMPAUDIOBUFSIZE, &BytesReturned);
+		getCount = BytesReturned;
+		testCount ++;
+		if(getCount > 0) fwrite(tempTsBuffer, 1, getCount, f_audio);
+		if((testCount & 0x7) == 0) {
+			printf("audio, count: %d, bytes: %d\n", testCount, getCount);
+		}
+		if(testCount > 100000) {
+			break;
+		}
+	}
+#undef  TEMPVIDEOBUFSIZE
+
+	fclose(f_audio);
+	return 0;
+}
+
+typedef struct _myBufferStru_
+{
+	PBYTE buffer;
+	DWORD size;
+
+}myBufferStru;
+
+
+
+
+
+HANDLE eventSignal1;
+HANDLE eventSignal2;
+HANDLE eventSignal3;
+HANDLE eventSignal4;
+HANDLE eventSignal5;
+unsigned long Thread_test_downloadFile(void* param)
+{
+	BOOL isStartTick = FALSE;
+	DWORD testCount = 0;
+	DWORD startTime = 0;
+	{
+		ddbsdk_servFileStatus_t   servStatus = { 0 };
+		ddbsdk_servFileInfo_t fileInfo = { 0 };
+		int cnt = 0;
+		DDB_IOControl(NULL, IOCTL_DDBSDK_OPEN_DATA_DOWNLOADFILE, NULL, 0, NULL, 0, NULL);
+		servStatus.selectedFILE_TYPE = 6;
+		while(1) {
+			Sleep(2000);
+			testCount++;
+			cnt = 0;
+			DDB_IOControl(NULL, IOCTL_DDBSDK_LIST_DATA_DOWNLOADINGFILESTATUS, 
+				(unsigned char *)&servStatus, sizeof(ddbsdk_servFileStatus_t), 
+				(unsigned char *)&servStatus, sizeof(ddbsdk_servFileStatus_t), NULL);
+			if(servStatus.numDownloading == 0) {
+				if(!isStartTick)
+				{
+					startTime = ::GetTickCount();
+					isStartTick = TRUE;
+				}
+				//if((testCount & 0xffff7) == 0) 
+					printf("no file downloading!\n");
+			} else {
+				//if((testCount & 0xffff7) == 0) 
+					printf("downing number: %d!\n", servStatus.numDownloading);
+			}
+			while(servStatus.fileID_downing[cnt] != 0 && cnt < servStatus.numDownloading) {
+				printf("downing: %x\n", servStatus.fileID_downing[cnt]);
+				cnt ++;
+			}
+			if(servStatus.numFinished == 0) {
+				//if((testCount & 0xffff7) == 0) 
+					printf("no file finished!\n");
+			} else {
+				//if((testCount & 0xffff7) == 0)
+					printf("file finished number: %d!\n", servStatus.numFinished);
+			}
+			cnt = 0;
+			while(servStatus.fileID_finished[cnt] != 0 && cnt < servStatus.numFinished) {
+				//if((testCount & 0xffff7) == 0) 
+					printf("finished: %x\n", servStatus.fileID_finished[cnt]);
+				cnt ++;
+			}
+			if(servStatus.numFinished && servStatus.numDownloading == 0) {
+				DWORD pastTime = ::GetTickCount() - startTime;
+				printf("%d类型文件全部下载完成用时：%ld毫秒\n", servStatus.selectedFILE_TYPE, pastTime);
+				//break;
+			}
+#if 0
+
+			/////////////// get one file that have finished ///////////////
+			if(servStatus.numFinished) {
+				u8 *  temp_fileBuf, * temp_filePtr;
+				u32   n;
+				FILE * df;
+				DWORD bytesreturned;
+
+				fileInfo.selectedFILE_ID = servStatus.fileID_finished[0];
+				DDB_IOControl(NULL, IOCTL_DDBSDK_GET_DATA_ONEFILEINFO, (unsigned char *)&fileInfo, sizeof(ddbsdk_servFileInfo_t), 
+					(unsigned char *)&fileInfo, sizeof(ddbsdk_servFileInfo_t), NULL);
+
+				temp_filePtr = temp_fileBuf = (u8 *)malloc(fileInfo.Block_num * fileInfo.Block_length);
+				/*
+				DDB_IOControl(NULL, IOCTL_DDBSDK_GETONEDATABLOCK_FINISHEDFILE_OPEN,  (unsigned char *)&fileInfo, sizeof(ddbsdk_servFileInfo_t), NULL, 0, NULL);
+				if(fileInfo.file_get != NULL) {
+					for(n=0; n<fileInfo.Block_num; n++) {
+						DDB_IOControl(NULL, IOCTL_DDBSDK_GETONEDATABLOCK_FINISHEDFILE,  (unsigned char *)&fileInfo, sizeof(ddbsdk_servFileInfo_t), temp_filePtr, fileInfo.Block_length, &bytesreturned);
+						temp_filePtr += fileInfo.Block_length;
+					}
+					df = fopen("\\MMC_Storage\\file.dat", "wb");
+					fwrite(temp_fileBuf, 1, fileInfo.FILE_LENGTH, df);
+					fclose(df);
+				}*/
+				DDB_IOControl(NULL, IOCTL_DDBSDK_GET_ONE_FINISHEDFILE, (unsigned char *)&fileInfo, sizeof(ddbsdk_servFileInfo_t), temp_filePtr, fileInfo.Block_length, &bytesreturned);
+				if(bytesreturned > 0)
+				{
+					df = fopen("\\temp\\file.dat", "wb");
+					fwrite(temp_fileBuf, 1, fileInfo.FILE_LENGTH, df);
+					fclose(df);
+				}
+				free(temp_fileBuf);
+				DDB_IOControl(NULL, IOCTL_DDBSDK_GETONEDATABLOCK_FINISHEDFILE_CLOSE,  (unsigned char *)&fileInfo, sizeof(ddbsdk_servFileInfo_t), NULL, 0, NULL);
+
+				break;
+			}
+#endif
+		}
+		DDB_IOControl(NULL, IOCTL_DDBSDK_CLOSE_DATA_DOWNLOADFILE, NULL, 0, NULL, 0, NULL);
+		}
+	SetEvent(eventSignal5);
+	return 0;
+}
+unsigned long Thread_test_getWeahter(void* param)
+{
+	PBYTE buffer;
+	DWORD size;
+
+	buffer = ((myBufferStru*) param)->buffer;
+	size = ((myBufferStru*) param)->size;
+
+	DWORD BytesReturned = 0;
+	DWORD testCount = 0;
+	int getCount = 0;
+
+	DDB_IOControl(NULL, IOCTL_DDBSDK_OPEN_DATA_WEATHER, NULL, 0, NULL, 0, NULL);
+	FILE  * f_data = fopen("\\Temp\\weather.dat", "wb");
+	while(1) {
+		DDB_IOControl(NULL, IOCTL_DDBSDK_GET_DATA_WEATHER, NULL, 0, buffer, size, &BytesReturned);
+		getCount = BytesReturned;
+		testCount ++;
+		if(getCount > 0) 
+			fwrite(buffer, 1, getCount, f_data);
+		if((testCount & 0x7) == 0)
+		{
+			printf("test_getWeahter ==> count: %d, bytes: %d\n", testCount, getCount);
+		}
+		//if(testCount == 80)break;
+	}
+	fclose(f_data);
+	DDB_IOControl(NULL, IOCTL_DDBSDK_CLOSE_DATA_WEATHER, NULL, 0, NULL, 0, NULL);
+	SetEvent(eventSignal3);
+	return 0;
+}
+unsigned long Thread_test_getPOIinfo(void* param)
+{
+	PBYTE buffer;
+	DWORD size;
+
+	buffer = ((myBufferStru*) param)->buffer;
+	size = ((myBufferStru*) param)->size;
+
+	DWORD BytesReturned = 0;
+	DWORD testCount = 0;
+	int getCount = 0;
+
+	DDB_IOControl(NULL, IOCTL_DDBSDK_OPEN_DATA_PIOINFO, NULL, 0, NULL, 0, NULL);
+	FILE  * f_data = fopen("\\Temp\\pioinfo.dat", "wb");
+	while(1) {
+		DDB_IOControl(NULL, IOCTL_DDBSDK_GET_DATA_PIOINFO, NULL, 0, buffer, size, &BytesReturned);
+		getCount = BytesReturned;
+		testCount ++;
+		if(getCount > 0)
+			fwrite(buffer, 1, getCount, f_data);
+		if((testCount & 0x7) == 0)
+		{
+			printf("test_getPOIinfo ==> count: %d, bytes: %d\n", testCount, getCount);
+		}
+		//if(testCount == 80)break;
+	}
+	fclose(f_data);
+	DDB_IOControl(NULL, IOCTL_DDBSDK_CLOSE_DATA_PIOINFO, NULL, 0, NULL, 0, NULL);
+	SetEvent(eventSignal3);
+	return 0;
+}
+
+unsigned long Thread_test_getTrafficData(void* param)
+{
+	PBYTE buffer;
+	DWORD size;
+
+	buffer = ((myBufferStru*) param)->buffer;
+	size = ((myBufferStru*) param)->size;
+
+	DWORD BytesReturned = 0;
+	DWORD testCount = 0;
+	int getCount = 0;
+
+	DDB_IOControl(NULL, IOCTL_DDBSDK_OPEN_DATA_TRAFFIC, NULL, 0, NULL, 0, NULL);
+	FILE  * f_data = fopen("\\Temp\\traffic.dat", "wb");
+	while(1) {
+		DDB_IOControl(NULL, IOCTL_DDBSDK_GET_DATA_TRAFFIC, NULL, 0, buffer, size, &BytesReturned);
+		getCount = BytesReturned;
+		testCount ++;
+		if(getCount > 0)
+			fwrite(buffer, 1, getCount, f_data);
+		if((testCount & 0x7) == 0) {
+			printf("test_getTrafficData ==> count: %d, bytes: %d\n", testCount, getCount);
+		//if(testCount == 80)break;
+		}
+	}
+	fclose(f_data);
+	DDB_IOControl(NULL, IOCTL_DDBSDK_CLOSE_DATA_TRAFFIC, NULL, 0, NULL, 0, NULL);
+	SetEvent(eventSignal1);
+	return 0;
+}
+
+unsigned long Thread_test_getFinanceData(void* param)
+{
+	PBYTE buffer;
+	DWORD size;
+
+	buffer = ((myBufferStru*) param)->buffer;
+	size = ((myBufferStru*) param)->size;
+
+	DWORD BytesReturned = 0;
+	DWORD testCount = 0;
+	int getCount = 0;
+
+	DDB_IOControl(NULL, IOCTL_DDBSDK_OPEN_DATA_FINANCE, NULL, 0, NULL, 0, NULL);
+	FILE  * f_data = fopen("\\Temp\\finance.dat", "wb");
+	while(1) {
+		DDB_IOControl(NULL, IOCTL_DDBSDK_GET_DATA_FINANCE, NULL, 0, buffer, size, &BytesReturned);
+		getCount = BytesReturned;
+		testCount ++;
+		if(getCount > 0)
+			fwrite(buffer, 1, getCount, f_data);
+		if((testCount & 0x7) == 0) {
+			printf("test_getFinanceDat ==> count: %d, bytes: %d\n", testCount, getCount);
+		//if(testCount == 80)break;
+		}
+	}
+	fclose(f_data);
+	DDB_IOControl(NULL, IOCTL_DDBSDK_CLOSE_DATA_FINANCE, NULL, 0, NULL, 0, NULL);
+	SetEvent(eventSignal2);
+	return 0;
+}
+
+unsigned long Thread_test_getSignal(void* param)
+{
+	UINT signal = 0;
+	DWORD returnbytes;
+
+	while(1) {
+		signal = 100;
+		DDB_IOControl(NULL, IOCTL_DDBSDK_DMBSIGNAL_QUALITY, NULL, 0, (PBYTE)&signal, sizeof(UINT), &returnbytes);
+		printf("DMBSIGNAL_QUALITY:%d   returnbytes:%d\n", signal,returnbytes);
+		Sleep(3000);
+	}
+	return 0;
+}
+
+void ddbif_smgLabReconfig()
+{
+	ddbsdk_reconfigure_t param;
+	UINT size = sizeof(ddbsdk_reconfigure_t);
+	ZeroMemory(&param, size);
+	param.frequency = 1456384000;
+	param.testInSMGLabFlag = 1;
+	//strcpy(param.ddbsdk_path_main, "\\MMC_Storage");
+	DDB_IOControl(NULL, IOCTL_DDBSDK_RECONFIGURE, (unsigned char *)&param, sizeof(ddbsdk_reconfigure_t), NULL, 0, NULL);
+	printf("set freq: %d \n", param.frequency);
+	BOOL openresult = DDB_IOControl(NULL, IOCTL_DDBSDK_OPEN_DMBDEVICE, NULL, 0, NULL, 0, NULL);
+	if (!openresult)
+	{
+		deviceOpen = false;
+		printf("----------open device FAIL!--------------\n");
+	} 
+	else
+	{
+		deviceOpen = true;
+		printf("----------open device!--------------\n");
+	}
+	
+}
+
+int WINAPI WinMain(	HINSTANCE hInstance,
+					HINSTANCE hPrevInstance,
+					LPTSTR    lpCmdLine,
+					int       nCmdShow)
+{
+	DWORD size;
+	PBYTE buffer1;
+	PBYTE buffer2;
+	PBYTE buffer3;
+	PBYTE buffer4;
+	//bool debug_exit = false;
+
+	eventSignal1 = CreateEvent(NULL,TRUE,FALSE,NULL);
+	eventSignal2 = CreateEvent(NULL,TRUE,FALSE,NULL);
+	eventSignal3 = CreateEvent(NULL,TRUE,FALSE,NULL);
+	eventSignal4 = CreateEvent(NULL,TRUE,FALSE,NULL);
+
+	DDB_Init(NULL, 0);
+	DDB_Open(0, 0, 0);
+// 	if (!deviceOpen)
+// 	{
+// 		DDB_IOControl(NULL, IOCTL_DDBSDK_OPEN_DMBDEVICE, NULL, 0, NULL, 0, NULL);
+// 		deviceOpen = true;
+// 	}
+	ddbif_smgLabReconfig();
+
+	ddbif_dataListTest();
+
+
+	/* allocate memory for data transfer */
+	size = 100 * 1024;
+	buffer1 = (PBYTE)malloc(size);
+	memset(buffer1, 0, size);
+	buffer2 = (PBYTE)malloc(size);
+	memset(buffer2, 0, size);
+	buffer3 = (PBYTE)malloc(size);
+	memset(buffer3, 0, size);
+	buffer4 = (PBYTE)malloc(size);
+	memset(buffer4, 0, size);
+
+	myBufferStru myBufferInfo1, myBufferInfo2, myBufferInfo3, myBufferInfo4;
+	myBufferInfo1.buffer = buffer1;
+	myBufferInfo1.size = size;
+	myBufferInfo2.buffer = buffer2;
+	myBufferInfo2.size = size;
+	myBufferInfo3.buffer = buffer3;
+	myBufferInfo3.size = size;
+	myBufferInfo4.buffer = buffer4;
+	myBufferInfo4.size = size;
+
+	HANDLE hThread_0, hThread_1, hThread_2, hThread_3, hThread_4, hThread_5, hThread_6;
+	DWORD dwThreadID_0, dwThreadID_1, dwThreadID_2, dwThreadID_3, dwThreadID_4, dwThreadID_5, dwThreadID_6;
+
+	//hThread_0 = CreateThread(NULL, 0, thread_sendStreamData, NULL, 0, &dwThreadID_0);
+
+	//hThread_1 = CreateThread(NULL, 0, Thread_test_getTrafficData, &myBufferInfo1, 0, &dwThreadID_1);
+	//hThread_2 = CreateThread(NULL, 0, Thread_test_getPOIinfo, &myBufferInfo2, 0, &dwThreadID_2);
+	//hThread_3 = CreateThread(NULL, 0, Thread_test_getFinanceData, &myBufferInfo3, 0, &dwThreadID_3);
+	//hThread_4 = CreateThread(NULL, 0, Thread_test_getWeahter, &myBufferInfo4, 0, &dwThreadID_4);
+	//hThread_5 = CreateThread(NULL, 0, Thread_test_downloadFile, NULL, 0, &dwThreadID_5);
+	//hThread_6 = CreateThread(NULL, 0, Thread_test_getSignal, NULL, 0, &dwThreadID_6);
+/*
+	WaitForSingleObject (eventSignal1,INFINITE);
+	WaitForSingleObject (eventSignal2,INFINITE);
+	WaitForSingleObject (eventSignal3,INFINITE);
+	WaitForSingleObject (eventSignal4,INFINITE);
+	WaitForSingleObject (eventSignal5,INFINITE);
+*/
+
+	WaitForSingleObject (hThread_0,INFINITE);
+	WaitForSingleObject (hThread_1,INFINITE);
+	WaitForSingleObject (hThread_2,INFINITE);
+	WaitForSingleObject (hThread_3,INFINITE);
+	WaitForSingleObject (hThread_4,INFINITE);
+	WaitForSingleObject (hThread_5,INFINITE);
+	WaitForSingleObject (hThread_6,INFINITE);
+
+	free(buffer1);
+	free(buffer2);
+	free(buffer3);
+	free(buffer4);
+
+	DDB_Close(NULL);
+	DDB_Deinit(0);
+
+	return 0;
+}
